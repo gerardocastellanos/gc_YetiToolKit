@@ -1,4 +1,4 @@
-# ------------------------------------   gc_YetiCombTools_0.04 ----------------------------
+# ------------------------------------   gc_YetiCombTools_0.05 ----------------------------
 # -------------------------------  Gerardo Castellanos - animetria@gmail.com -------------
 
 
@@ -9,15 +9,15 @@ iconpath = '/repository/software/install/maya/2016/centos-6_x86-64/icons/'
 
 listGroomSelected = []
 
-def YetiCombToolsWindows():
+def gcYetiCombToolsWindows():
 	if(cmds.window('YetiCombToolsWindow',q=True,ex=True)):cmds.deleteUI('YetiCombToolsWindow')
-	cmds.window('YetiCombToolsWindow',t=u'gc_YetiCombTools_v0.04',iconName=u'hairConstraint.svg', w=400)
+	cmds.window('YetiCombToolsWindow',t=u'gc_YetiCombTools_v0.05',iconName=u'hairConstraint.svg', w=400)
 	
 	
 # UI list grooms	
 	
 	cmds.rowColumnLayout('listGroom_ui',p='YetiCombToolsWindow',nc=1)
-	cmds.button(p='listGroom_ui', l=u'UPDATE', c='YetiCombToolsWindows()')
+	cmds.button(p='listGroom_ui', l=u'UPDATE', c='gcYetiCombToolsWindows()')
 	groomSL = cmds.textScrollList('listGroom', p='listGroom_ui',po=True,bgc=[0.1, 0.1, 0.1],h=100, ebg=True, ams=False, append=listGroomNodesG())
 	
 
@@ -49,14 +49,14 @@ def YetiCombToolsWindows():
 	cmds.button('strength_8_button_ui',w=50,l=u'1',bgc=[0.34, 0.62, 0.34], c='setStrength(1)')
 	
 	cmds.rowColumnLayout('presetsStrenghtS_row_ui',p='YetiCombToolsWindow',nc=8)
-	cmds.button('strengthS_1_button_ui',w=50,l=u'<<<<', bgc=[0.76, 0.52, 0.52], c='setStrength(.5)')
-	cmds.button('strengthS_2_button_ui',w=50,l=u'<<<', bgc=[0.76, 0.52, 0.52], c='setStrength(.9)')
-	cmds.button('strengthS_3_button_ui',w=50,l=u'<<', bgc=[0.76, 0.52, 0.52], c='setStrength(.95)')
-	cmds.button('strengthS_4_button_ui',w=50,l=u'<', bgc=[0.76, 0.52, 0.52], c='setStrength(.99)')
-	cmds.button('strengthS_5_button_ui',w=50,l=u'>',bgc=[0.34, 0.62, 0.34], c='setStrength(1.01)')
-	cmds.button('strengthS_6_button_ui',w=50,l=u'>>',bgc=[0.34, 0.62, 0.34], c='setStrength(1.05)')
-	cmds.button('strengthS_7_button_ui',w=50,l=u'>>>',bgc=[0.34, 0.62, 0.34], c='setStrength(1.1)')
-	cmds.button('strengthS_8_button_ui',w=50,l=u'>>>>',bgc=[0.34, 0.62, 0.34], c='setStrength(1.5)')
+	cmds.button('strengthS_1_button_ui',w=50,l=u'<<<<', bgc=[0.76, 0.52, 0.52], c='setScale(.5)')
+	cmds.button('strengthS_2_button_ui',w=50,l=u'<<<', bgc=[0.76, 0.52, 0.52], c='setScale(.9)')
+	cmds.button('strengthS_3_button_ui',w=50,l=u'<<', bgc=[0.76, 0.52, 0.52], c='setScale(.95)')
+	cmds.button('strengthS_4_button_ui',w=50,l=u'<', bgc=[0.76, 0.52, 0.52], c='setScale(.99)')
+	cmds.button('strengthS_5_button_ui',w=50,l=u'>',bgc=[0.34, 0.62, 0.34], c='setScale(1.01)')
+	cmds.button('strengthS_6_button_ui',w=50,l=u'>>',bgc=[0.34, 0.62, 0.34], c='setScale(1.05)')
+	cmds.button('strengthS_7_button_ui',w=50,l=u'>>>',bgc=[0.34, 0.62, 0.34], c='setScale(1.1)')
+	cmds.button('strengthS_8_button_ui',w=50,l=u'>>>>',bgc=[0.34, 0.62, 0.34], c='setScale(1.5)')
 	
 	cmds.rowColumnLayout('presetsFalloffs_row_ui',p='YetiCombToolsWindow',nc=8)
 	cmds.button('Falloffs_1_button_ui',w=50,l=u'root', bgc=[0.34, 0.56, 0.62], c='setFalloffPower(0.001)')
@@ -127,7 +127,6 @@ def selectGroomNode(groomSL, mirrorCB):
 def selectBrush(brush):
     global listGroomSelected
     if listGroomSelected:
-        print ('AEpgYetiGroomToolsCombCMD ' + listGroomSelected[0] + ' ' + brush)
         mel.eval('AEpgYetiGroomToolsCombCMD ' + listGroomSelected[0] + ' ' + brush)
     
 def setStrength(strength):
@@ -144,13 +143,17 @@ def fill():
     global listGroomSelected
     if listGroomSelected:
         mel.eval ('pgYetiCommand -fillGroom '+ listGroomSelected[0])
-        print ('pgYetiCommand -fillGroom '+ listGroomSelected)
 
 def mirror(value):
     if listGroomSelected:
         cmds.setAttr(listGroomSelected[0]+'.mirror', value)
         print (listGroomSelected[0]+'.mirror', value)
         
+def setScale(scale):
+    setStrength(scale)
+    selectBrush("0 6")
+    
+    
         
 def deselectStrands():
     global listGroomSelected
@@ -185,4 +188,5 @@ def scatterDensity(slider, *arg):
     if listGroomSelected:
         cmds.setAttr(listGroomSelected[0] +'.scatterDensity', val)
         
-YetiCombToolsWindows()
+        
+gcYetiCombToolsWindows()

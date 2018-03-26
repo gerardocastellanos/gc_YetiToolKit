@@ -1,10 +1,11 @@
-# ----------------------------  cg_YetiTools  v.0.13 ----------------------
+# ----------------------------  cg_YetiTools  v.0.16 ----------------------
 # ----------------------------  by: Gerardo Castellanos -------------------
 # ----------------------------  animetria@gmail.com -----------------------
 
 
 from maya import cmds
 from functools import partial
+import time
 
 listGroomsSelected = cmds.ls(type="pgYetiGroom")
 listYetiSelected = cmds.ls(type="pgYetiMaya")
@@ -16,7 +17,7 @@ listYetiSelected = cmds.ls(type="pgYetiMaya")
 
 def gcYetiToolsWindows():
 	if(cmds.window('gcYetiTools_ui',q=True,ex=True)):cmds.deleteUI('gcYetiTools_ui')
-	cmds.window('gcYetiTools_ui',t=u'gc_YetiTools v0.13',s=True,mnb=False,mxb=False,mbv=True,wh=(300, 300),vis=True,rtf=True)
+	cmds.window('gcYetiTools_ui',t=u'gc_YetiTools v0.15',s=True,mnb=False,mxb=False,mbv=True,wh=(300, 300),vis=True,rtf=True)
 	#cmds.columnLayout(adj=True,cal=u'center')
 
 # SELECTION UI
@@ -44,11 +45,11 @@ def gcYetiToolsWindows():
 	cmds.rowColumnLayout('yeticonnection', p='Objects', en=True, nc=2, cw=[[1, 260],[2, 260]])
 	
 	#disconnect
-	cmds.button(l=u'yeti disconnect', w=200, c='disconnectYeti(objCurrent(), listYetiSelected)')	
-	cmds.button(l=u'groom disconnect', w=200, c='disconnectGroom(objCurrent(), listGroomsSelected)')	
+	cmds.button(l=u'Yeti Disconnect', w=200, c='disconnectYeti(objCurrent(), listYetiSelected)')	
+	cmds.button(l=u'Groom Disconnect', w=200, c='disconnectGroom(objCurrent(), listGroomsSelected)')	
 	#connect    
-	cmds.button(l=u'yeti connect', w=200, c='connectYeti(objCurrent(), listYetiSelected)')
-	cmds.button(l=u'groom connect', w=200, c='connectGroom(objCurrent(), listGroomsSelected)')	
+	cmds.button(l=u'Yeti Connect', w=200, c='connectYeti(objCurrent(), listYetiSelected)')
+	cmds.button(l=u'Groom Connect', w=200, c='connectGroom(objCurrent(), listGroomsSelected)')	
 	
 
 
@@ -96,10 +97,10 @@ def gcYetiToolsWindows():
 	displayHeatCB = cmds.checkBox('displayHeat',l=u'as Heat Map',v=False, p='displatyGroomRow', onc='displayHeat(True)', ofc='displayHeat(False)')
 	
 	cmds.rowColumnLayout('groomFunctions', p='Groom', en=True, nc=2, cw=[[1, 260],[2, 260]])
-	cmds.button(l=u'Rest Pose', w=200, c='restPose(listGroomsSelected)')
-	cmds.button(l=u'Convert to Curves', w=200, c='convertToCurves(listGroomsSelected)')
-	cmds.button(l=u'Delete default attributes', w=200, c='deleteDA(listGroomsSelected)')
-	
+	cmds.button(l=u'Rest pose', w=200, c='restPose(listGroomsSelected)')
+	cmds.button(l=u'Convert to curves', w=200, c='convertToCurves(listGroomsSelected)')
+	cmds.button(l=u'Delete default attributes', w=200, c='deleteDA()')
+	cmds.button(l=u'Delete duplicate grooms', w=200, c='cmds.pgYetiCommand(removeDuplicates=0.00001)')
 
 # Scroll List of Yeti & Grooms Nodes	
 
@@ -122,24 +123,62 @@ def gcYetiToolsWindows():
 	
 	cmds.rowColumnLayout('steps', p='Update', en=True, nc=2, cw=[[1, 160],[2, 360]])
 	
-	cmds.text(l=u'step 1 :',ww=False, p='steps')
-	cmds.button(p='steps', l=u'create Proxy Groom Object', c='createProxyGroomObject()')	
-	cmds.text(l=u'step 2 :',ww=False, p='steps')		
+	cmds.text(l=u'Step 1 :',ww=False, p='steps')
+	cmds.button(p='steps', l=u'Create Proxy Groom Object', c='createProxyGroomObject()')	
+	cmds.text(l=u'Step 2 :',ww=False, p='steps')		
 	cmds.text(l=u'Update your model/reference, unlock it \n select your new mesh \n select yeti & grooms nodes',ww=False, p='steps')	
-	cmds.text(l=u'step 3 :',ww=False, p='steps')
-	cmds.button(p='steps', l=u'adapt proxy', c='createBS()')	
-	cmds.text(l=u'step 4 :',ww=False, p='steps')
-	cmds.button(p='steps', l=u'attach fur', c='installYeti()')	
+	cmds.text(l=u'Step 3 :',ww=False, p='steps')
+	cmds.button(p='steps', l=u'Adapt proxy', c='createBS()')	
+	cmds.text(l=u'Step 4 :',ww=False, p='steps')
+	cmds.button(p='steps', l=u'Attach fur', c='installYeti()')	
 	
 	
-# UPDATE MODEL	
+# Object Tab
 	cmds.frameLayout('Object',p='gcYetiTools_ui',cll=True,l=u'Object',w=520)
 	
 	cmds.rowColumnLayout('TextRefObj', p='Object', en=True, nc=2, cw=[[1, 260],[2, 260]])
 	
 	cmds.button(p='TextRefObj', l=u'create Texture Ref Obj', c='createTRO(objCurrent())')
-	cmds.button(p='TextRefObj', l=u'delete Texture Ref Obj', c='deleteTRO(objCurrent())')		
+	cmds.button(p='TextRefObj', l=u'delete Texture Ref Obj', c='deleteTRO(objCurrent())')	
+
+# Curve Tools	
+	cmds.frameLayout('Curves',p='gcYetiTools_ui',cll=True,l=u'Curves',w=520)
+    
+	cmds.rowColumnLayout('CurvesTools', p='Curves', en=True, nc=3, cw=[[1, 173],[2, 173], [3, 173]])
+	cmds.button(p='CurvesTools', l=u'delete 0 size curves', c='delete0crv()')
+	cmds.button(p='CurvesTools', l=u'convert yeti to curves', c='mel.eval("pgYetiCommand -generateMayaObjects")')
 	
+
+# split transform with multiples curves
+
+	cmds.rowColumnLayout("splitShapes_separator", p='Curves',nc=1, cw=[[1, 520]])
+	cmds.separator(st=u'double')
+	
+
+	cmds.text(l=u'split a transform node with multiples curve shapes',ww=False, p='splitShapes_separator')	
+	
+	cmds.rowColumnLayout("splitShapes_rc", p='Curves',nc=2, cw=[[1, 120], [2, 400]])
+	cmds.text(l=u'Transform node',ww=False, p='splitShapes_rc')	
+	nametransformTF = cmds.textField("nametransformTF", p='splitShapes_rc',tx=u'', w=220)
+	cmds.text(l=u'New name',ww=False, p='splitShapes_rc')		
+	newnametransformTF = cmds.textField("newnametransformTF", p='splitShapes_rc', tx=u'', w=220)
+	
+	cmds.rowColumnLayout("splitShapes_button_rc", p='Curves',nc=2, cw=[[1, 160], [2,360]])
+	splitset=0
+	createSetCurvesCB = cmds.checkBox('createSetCurves',l=u'Create Set',v=False, p='splitShapes_button_rc', onc='splitset=1', ofc='splitset=0')
+	cmds.button(p='splitShapes_button_rc',l=u'Split Shapes', c='splitshapes()', w=260)
+	
+# convert curve set to groom
+
+	cmds.rowColumnLayout("splitShapes_separator2", p='Curves',nc=1, cw=[[1, 520]])
+	cmds.separator(st=u'double')
+	cmds.text(l=u'convert curve set to groom ',ww=False, p='splitShapes_separator2')	
+	
+	cmds.rowColumnLayout("convertcurvestogroom_rc", p='Curves',nc=2, cw=[[1, 400], [2, 120]])
+	subDivGroomSliderS = cmds.floatSliderGrp('subDivGroomSliderS_ui', p='convertcurvestogroom_rc',w=400,f=True,l=u'Step Size',min=0.01, max=1.0,pre=2,s=3,v=0.1)
+	#cmds.floatSliderGrp(ViewDensitySliderS , e=True, dc=partial(ViewDensity, ViewDensitySliderS)) 
+	cmds.button(p='convertcurvestogroom_rc',l=u'convert', c='convertsettogroom()', w=120)
+
 
 # ------------------------------------------------  FUNCTIONS ------------------------------------------------------------------
 
@@ -369,7 +408,8 @@ def convertToCurves(listGroomsSelected):
             cmds.group (curvesg, n=str(groom)+'Curves_GRP')
             
             
-def deleteDA(listGroomsSelected):
+def deleteDA():
+    global listGroomsSelected
     attList = ['lengthWeight','innerRadius', 'outerRadius', 'attractionBias', 'randomAttraction', 'weight', 'baseAttraction', 'twist','density','surfaceDirectionLimit','staticLength','surfaceDirectionLimitFalloff','tipAttraction']
     if listGroomsSelected:
         for groom in listGroomsSelected:
@@ -454,12 +494,90 @@ def createTRO(obj):
     else:
         cmds.warning ('there is not an object selected or there is a texture reference object already')
    
-
 # Delete a TRO
 def deleteTRO(obj):
     objT=cmds.listRelatives(obj, p=True)
     print ((str(objT)+'_reference'))
     if obj and (cmds.objExists(str(objT[0])+'_reference')) :
         cmds.delete(str(objT[0])+'_reference') 
+        
+        
+        
+
+# ------------------------   CURVE FUNCTIONS
+
+# Delete 0 size curves       
+def delete0crv():
+    crvs = cmds.ls(type='nurbsCurve')
+    for crv in crvs:
+        getcvs = cmds.ls("%s.cv[::]" %crv, fl=1)
+        if len(getcvs)<4:
+            pcrv = cmds.listRelatives(crv, p=True)
+            cmds.delete(pcrv)
+            
+                        
+# Split curves with a same transform node in multiples transform with only one curve shape
+def splitshapes():
+    name = cmds.textField("nametransformTF", q=True, text=True)
+    newname = cmds.textField("newnametransformTF", q=True, text=True)
+    global splitset
+    
+    if (name<>"") or (newname<>""):
+        start=time.clock()
+        if splitset:
+            cmds.select(cl=True)
+            newset=cmds.sets(name=newname+'_set')
+            print (cmds.objectType(newset))
+            
+        if cmds.objExists(name):
+            newfather=cmds.group(name=newname+'_GRP', em=True)
+            n=0
+            print ((cmds.listRelatives(name, shapes=True)))
+            for member in (cmds.listRelatives(name, shapes=True)):
+                num=str(n).zfill(6)
+                if splitset:
+                  cmds.sets(member, addElement=newset)
+                grp=cmds.group(name=newname+'_'+num+'_CRV', em=True)
+                cmds.parent(member, grp, s=True, add=True)
+                cmds.rename(member, newname+'_'+num+'_Shape')
+                cmds.parent(grp, newfather)
+
+                if (n%20000)==0:
+                  mel.eval('file -save;')
+                print(member)
+                n+=1
+                
+            deleteStart = time.clock()          
+            cmds.delete(name)
+
+            finish=time.clock()
+
+            print ('splitting time: '+str(deleteStart-start) + " sec")
+            print ('deleting original time: '+str(finish-deleteStart) + " sec")
+            print ('total time taken: '+str(finish-start) + " sec")
+ 
+        else:
+            cmds.warning ('there is not an object called '+name)
+            
+    else:
+        cmds.warning ('please enter a valid names')
+        
+# Convert a curve set in a Groom        
+def convertsettogroom(*args):
+    listSel = cmds.ls(sl=True)
+    if listSel is None:
+         cmds.warning('Please select a set')
+    if len(listSel)==1:
+        if cmds.objectType(listSel[0]) == 'objectSet':
+            set = listSel[0]
+            val = cmds.floatSliderGrp('subDivGroomSliderS_ui', q=True, v=True)
+            mel.eval ('pgYetiConvertGuideSetToGroom("'+str(set)+'","'+objCurrent()+'",'+str(val)+')')
+        else:
+            cmds.warning('Select a set')
+        
+    else: 
+         cmds.warning('Select only one set')         
+        
+        
         
 gcYetiToolsWindows()
